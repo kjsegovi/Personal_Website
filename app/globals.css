@@ -616,6 +616,60 @@ nav a:focus-visible::after {
   object-fit: cover;
 }
 
+.feature-card {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.55fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  margin-top: 2.75rem;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border-left: 5px solid var(--orange);
+  background: var(--navy);
+  color: var(--white);
+}
+
+.feature-card > div:first-child > p {
+  margin: 0 0 0.7rem;
+  color: var(--gray);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.feature-card h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.5vw, 3.4rem);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.feature-card > div:last-child > p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.feature-card ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 1.35rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature-card li {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .project-details {
   display: grid;
   grid-template-columns: minmax(0, 0.65fr) minmax(320px, 0.8fr);
@@ -1023,7 +1077,8 @@ footer {
   }
 
   .project-title-row,
-  .project-details {
+  .project-details,
+  .feature-card {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }

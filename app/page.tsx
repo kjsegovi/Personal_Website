@@ -11,6 +11,13 @@ type ProjectMetric = {
   label: string;
 };
 
+type ProjectFeature = {
+  label: string;
+  title: string;
+  description: string;
+  technologies: string[];
+};
+
 type Project = {
   slug: string;
   number: string;
@@ -23,6 +30,7 @@ type Project = {
   highlights: string[];
   links: ExternalLink[];
   metrics?: ProjectMetric[];
+  feature?: ProjectFeature;
   imageSrc?: string;
   imageAlt?: string;
   imagePosition?: string;
@@ -49,15 +57,38 @@ const projects: Project[] = [
     name: "OLI Torus",
     category: "Accessible product engineering",
     summary:
-      "Production open-source authoring work for an online learning platform used to create and deliver accessible course experiences.",
+      "Production open-source authoring and automation work for an online learning platform used to create and deliver accessible course experiences.",
     outcome:
-      "Strengthened authoring workflows and learner accessibility across interactive content, media, and responsive flashcard experiences.",
-    technologies: ["TypeScript", "React", "Phoenix", "Accessibility", "Open source"],
+      "Strengthened authoring workflows and learner accessibility across interactive content, media, responsive flashcards, and automated course-content ingestion.",
+    technologies: [
+      "TypeScript",
+      "React",
+      "Phoenix",
+      "Elixir",
+      "Google Slides API",
+      "Accessibility",
+      "Open source",
+    ],
     highlights: [
       "Built Simple Author flashcard capabilities and resilient authoring behavior.",
       "Improved adaptive iframe accessibility and media ARIA semantics.",
       "Resolved flashcard resizing and layout-persistence issues across authoring contexts.",
+      "Prototyped Advanced Author automation that converts structured Google Slides into adaptive learning content.",
     ],
+    feature: {
+      label: "Advanced Author / Automation POC",
+      title: "Google Slides-to-Torus importer",
+      description:
+        "Built a proof-of-concept import workflow that translates presentation structure and speaker-note conventions into Advanced Author screens, components, adaptive rules, media, generated titles, and actionable validation warnings. The pipeline combines deterministic parsing with guarded AI fallbacks and exposes the workflow through onboarding and MCP tools.",
+      technologies: [
+        "Elixir",
+        "TypeScript",
+        "Google Slides API",
+        "Adaptive rules",
+        "GenAI fallback",
+        "MCP",
+      ],
+    },
     links: [
       {
         label: "View repository",
@@ -68,6 +99,12 @@ const projects: Project[] = [
         label: "Contribution history",
         href: "https://github.com/Simon-Initiative/oli-torus/commits?author=kjsegovi",
         ariaLabel: "View Kevin Segovia's public OLI Torus contribution history",
+      },
+      {
+        label: "Automation POC",
+        href: "https://github.com/kjsegovi/oli-torus-simple-author-ai/commit/8d174158f82c039e523c1906bbd2f79e104d8439",
+        ariaLabel:
+          "View Kevin Segovia's Advanced Author Google Slides automation proof of concept",
       },
     ],
   },
@@ -390,6 +427,23 @@ export default function Home() {
                   </div>
 
                   <ProjectVisual project={project} />
+
+                  {project.feature && (
+                    <div className="feature-card">
+                      <div>
+                        <p>{project.feature.label}</p>
+                        <h4>{project.feature.title}</h4>
+                      </div>
+                      <div>
+                        <p>{project.feature.description}</p>
+                        <ul aria-label={`${project.feature.title} technologies`}>
+                          {project.feature.technologies.map((technology) => (
+                            <li key={technology}>{technology}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="project-details">
                     <p className="project-summary">{project.summary}</p>
