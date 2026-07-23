@@ -64,8 +64,8 @@ const projects: Project[] = [
     highlights: [
       "Built Simple Author flashcard capabilities and resilient authoring behavior.",
       "Improved adaptive iframe accessibility and media ARIA semantics.",
-      "Resolved flashcard resizing and layout-persistence issues across authoring contexts.",
-      "Built an Advanced Author automation proof of concept that imports structured Google Slides into adaptive screens, components, rules, media, and validation warnings, using deterministic parsers with a guarded AI fallback.",
+      "Introduced component resilience improvements across authoring experiences, strengthening responsive behavior, state continuity, and editor reliability.",
+      "Developed an Advanced Author automation workflow that imports structured Google Slides into adaptive screens, components, rules, media, and validation warnings, combining deterministic parsing with a guarded AI fallback.",
     ],
     links: [
       {
@@ -79,10 +79,10 @@ const projects: Project[] = [
         ariaLabel: "View Kevin Segovia's public OLI Torus contribution history",
       },
       {
-        label: "Automation POC",
+        label: "Author automation",
         href: "https://github.com/kjsegovi/oli-torus-simple-author-ai/commit/8d174158f82c039e523c1906bbd2f79e104d8439",
         ariaLabel:
-          "View Kevin Segovia's Advanced Author Google Slides automation proof of concept",
+          "View Kevin Segovia's Advanced Author Google Slides automation work",
       },
     ],
   },

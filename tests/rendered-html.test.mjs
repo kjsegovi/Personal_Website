@@ -43,9 +43,11 @@ test("server-renders Kevin Segovia's portfolio", async () => {
   assert.match(html, /Skip to main content/i);
   assert.match(html, /alt="Kevin Segovia smiling in a white shirt\."/i);
   assert.match(html, /OLI Torus/i);
-  assert.match(html, /Advanced Author automation proof of concept/i);
+  assert.match(html, /Introduced component resilience improvements/i);
+  assert.match(html, /Advanced Author automation workflow/i);
   assert.match(html, /adaptive screens, components, rules, media/i);
   assert.match(html, /oli-torus-simple-author-ai\/commit\/8d174158/i);
+  assert.doesNotMatch(html, /proof of concept|Automation POC/i);
   assert.match(html, /Support Ticket Analytics/i);
   assert.match(html, /Into the Animal Cell/i);
   assert.match(html, /MacChatLMBackend/i);
