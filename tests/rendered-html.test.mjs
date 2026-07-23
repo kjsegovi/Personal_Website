@@ -42,6 +42,15 @@ test("server-renders Kevin Segovia's portfolio", async () => {
   assert.match(html, /href="#contact"/i);
   assert.match(html, /Skip to main content/i);
   assert.match(html, /alt="Kevin Segovia smiling in a white shirt\."/i);
+  assert.match(
+    html,
+    /I(?:&#x27;|&apos;|')m an Application Developer II at Arizona State University/i,
+  );
+  assert.match(html, /My recent work includes/i);
+  assert.doesNotMatch(
+    html,
+    /Kevin Segovia is an Application Developer II|He works across|His recent work|He holds an MCS/i,
+  );
   assert.match(html, /OLI Torus/i);
   assert.match(html, /Introduced component resilience improvements/i);
   assert.match(html, /Advanced Author automation workflow/i);

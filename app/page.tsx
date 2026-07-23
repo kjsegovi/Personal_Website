@@ -325,18 +325,18 @@ export default function Home() {
                 Accessible Products, Backend Systems &amp; AI Infrastructure
               </p>
               <p className="biography">
-                Kevin Segovia is an Application Developer II at Arizona State
-                University building accessible learning systems, backend
-                services, and applied AI infrastructure. He works across
-                TypeScript/React, Python, C++, SQL, AWS, and local-model runtimes
-                to design production authoring features, APIs, resilient data
-                pipelines, model-evaluation workflows, and multi-provider LLM
-                backends. His recent work includes accessibility and authoring
-                contributions to OLI Torus; a provenance-preserving support
-                analytics pipeline with read-only extraction, resumable
-                processing, isolated data stores, and explicit quality gates; an
-                interactive Three.js biology simulation; and a local-first C++
-                LLM service. He holds an MCS and BS in Computer Science from ASU.
+                I&apos;m an Application Developer II at Arizona State University
+                building accessible learning systems, backend services, and
+                applied AI infrastructure. I work across TypeScript/React,
+                Python, C++, SQL, AWS, and local-model runtimes to design
+                production authoring features, APIs, resilient data pipelines,
+                model-evaluation workflows, and multi-provider LLM backends. My
+                recent work includes accessibility and authoring contributions
+                to OLI Torus; a provenance-preserving support analytics pipeline
+                with read-only extraction, resumable processing, isolated data
+                stores, and explicit quality gates; an interactive Three.js
+                biology simulation; and a local-first C++ LLM service. I hold an
+                MCS and BS in Computer Science from ASU.
               </p>
               <div className="hero-actions">
                 <a className="button button-primary" href="#work">
