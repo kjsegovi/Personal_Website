@@ -11,13 +11,6 @@ type ProjectMetric = {
   label: string;
 };
 
-type ProjectFeature = {
-  label: string;
-  title: string;
-  description: string;
-  technologies: string[];
-};
-
 type Project = {
   slug: string;
   number: string;
@@ -30,7 +23,6 @@ type Project = {
   highlights: string[];
   links: ExternalLink[];
   metrics?: ProjectMetric[];
-  feature?: ProjectFeature;
   imageSrc?: string;
   imageAlt?: string;
   imagePosition?: string;
@@ -57,38 +49,24 @@ const projects: Project[] = [
     name: "OLI Torus",
     category: "Accessible product engineering",
     summary:
-      "Production open-source authoring and automation work for an online learning platform used to create and deliver accessible course experiences.",
+      "Production open-source product work spanning authoring tools, accessibility, responsive interactive components, and content automation for an online learning platform.",
     outcome:
-      "Strengthened authoring workflows and learner accessibility across interactive content, media, responsive flashcards, and automated course-content ingestion.",
+      "Shipped authoring and accessibility improvements across flashcards, adaptive content, embedded media, responsive layouts, and course-creation workflows.",
     technologies: [
       "TypeScript",
       "React",
       "Phoenix",
       "Elixir",
-      "Google Slides API",
       "Accessibility",
+      "Automation",
       "Open source",
     ],
     highlights: [
       "Built Simple Author flashcard capabilities and resilient authoring behavior.",
       "Improved adaptive iframe accessibility and media ARIA semantics.",
       "Resolved flashcard resizing and layout-persistence issues across authoring contexts.",
-      "Prototyped Advanced Author automation that converts structured Google Slides into adaptive learning content.",
+      "Built an Advanced Author automation proof of concept that imports structured Google Slides into adaptive screens, components, rules, media, and validation warnings, using deterministic parsers with a guarded AI fallback.",
     ],
-    feature: {
-      label: "Advanced Author / Automation POC",
-      title: "Google Slides-to-Torus importer",
-      description:
-        "Built a proof-of-concept import workflow that translates presentation structure and speaker-note conventions into Advanced Author screens, components, adaptive rules, media, generated titles, and actionable validation warnings. The pipeline combines deterministic parsing with guarded AI fallbacks and exposes the workflow through onboarding and MCP tools.",
-      technologies: [
-        "Elixir",
-        "TypeScript",
-        "Google Slides API",
-        "Adaptive rules",
-        "GenAI fallback",
-        "MCP",
-      ],
-    },
     links: [
       {
         label: "View repository",
@@ -427,23 +405,6 @@ export default function Home() {
                   </div>
 
                   <ProjectVisual project={project} />
-
-                  {project.feature && (
-                    <div className="feature-card">
-                      <div>
-                        <p>{project.feature.label}</p>
-                        <h4>{project.feature.title}</h4>
-                      </div>
-                      <div>
-                        <p>{project.feature.description}</p>
-                        <ul aria-label={`${project.feature.title} technologies`}>
-                          {project.feature.technologies.map((technology) => (
-                            <li key={technology}>{technology}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  )}
 
                   <div className="project-details">
                     <p className="project-summary">{project.summary}</p>
