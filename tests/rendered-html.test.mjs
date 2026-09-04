@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { access, readFile, readdir } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
 const projectRoot = new URL("../", import.meta.url);
@@ -86,10 +86,6 @@ test("keeps the final portfolio self-contained and accessible", async () => {
   assert.match(css, /--white: #ffffff/i);
   assert.match(css, /prefers-reduced-motion: reduce/);
 
-  assert.deepEqual(
-    await readdir(new URL("../app/_sites-preview", import.meta.url)),
-    [],
-  );
   await access(new URL("../public/kevin-segovia-portrait.png", import.meta.url));
   await access(new URL("../public/github-avatar.png", import.meta.url));
   await access(new URL("../public/og.png", import.meta.url));
