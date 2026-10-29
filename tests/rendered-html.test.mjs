@@ -1,93 +1,122 @@
-import assert from "node:assert/strict";
-import { access, readFile } from "node:fs/promises";
-import test from "node:test";
+import assert from 'node:assert/strict';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import path from 'node:path';
+import { before, after, test } from 'node:test';
+import { createStaticServer } from '../scripts/serve.mjs';
+import { readArticles } from '../lib/notebook.mjs';
+import { notebookEnabled } from '../lib/features.mjs';
 
-const projectRoot = new URL("../", import.meta.url);
+const directory = path.resolve('dist/client');
+const routes = ['/', '/projects/', '/about/', '/contact/', '/notebook/', '/projects/course-authoring-systems/', '/projects/habfly/', '/projects/embedded-learning/', '/projects/aws-infrastructure/', '/projects/oli-torus/', '/projects/tour-it/', '/projects/support-analytics/', '/projects/infiniscope-migration/'];
+let server, base;
+before(async () => {
+  assert.ok(existsSync(path.join(directory, 'index.html')), 'Run pnpm build before these tests');
+  server = createStaticServer(directory);
+  await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
+  base = `http://127.0.0.1:${server.address().port}`;
+});
+after(async () => { if (server?.listening) await new Promise((resolve) => server.close(resolve)); });
 
-async function render() {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
-  const { default: worker } = await import(workerUrl.href);
-
-  return worker.fetch(
-    new Request("http://localhost/", {
-      headers: { accept: "text/html" },
-    }),
-    {
-      ASSETS: {
-        fetch: async () => new Response("Not found", { status: 404 }),
-      },
-    },
-    {
-      waitUntil() {},
-      passThroughOnException() {},
-    },
-  );
-}
-
-test("server-renders Kevin Segovia's portfolio", async () => {
-  const response = await render();
-  assert.equal(response.status, 200);
-  assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
-
-  const html = await response.text();
-  assert.match(
-    html,
-    /<title>Kevin Segovia \| Accessible Products, Backend Systems &amp; AI Infrastructure<\/title>/i,
-  );
-  assert.match(html, /<h1[^>]*>Kevin Segovia<\/h1>/i);
-  assert.match(html, /href="#work"/i);
-  assert.match(html, /href="#experience"/i);
-  assert.match(html, /href="#credentials"/i);
-  assert.match(html, /href="#contact"/i);
-  assert.match(html, /Skip to main content/i);
-  assert.match(html, /alt="Kevin Segovia smiling in a white shirt\."/i);
-  assert.match(
-    html,
-    /I(?:&#x27;|&apos;|')m an Application Developer II at Arizona State University/i,
-  );
-  assert.match(html, /My recent work includes/i);
-  assert.doesNotMatch(
-    html,
-    /Kevin Segovia is an Application Developer II|He works across|His recent work|He holds an MCS/i,
-  );
-  assert.match(html, /OLI Torus/i);
-  assert.match(html, /Improved responsive layouts, preserved editor state/i);
-  assert.match(html, /Advanced Author automation workflow/i);
-  assert.match(html, /adaptive screens, components, rules, media/i);
-  assert.match(html, /oli-torus-simple-author-ai\/commit\/8d174158/i);
-  assert.doesNotMatch(html, /proof of concept|Automation POC/i);
-  assert.match(html, /Support Ticket Analytics/i);
-  assert.match(html, /Into the Animal Cell/i);
-  assert.match(html, /MacChatLMBackend/i);
-  assert.match(html, /mailto:kjsegovi@icloud\.com/i);
-  assert.doesNotMatch(html, /gmail|telephone|phone number|download (my )?résumé/i);
+for (const route of routes) test(`exported ${route} works on direct visits and refreshes`, async () => {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const response = await fetch(base + route);
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get('content-type'), /^text\/html/);
+    const html = await response.text();
+    assert.equal((html.match(/<h1\b/g) ?? []).length, 1, 'One primary heading');
+    assert.match(html, /<main[^>]*id="main-content"/);
+    assert.match(html, /Skip to main content/);
+    assert.match(html, /aria-label="Primary navigation"/);
+    assert.match(html, new RegExp(`<link[^>]*rel="canonical"[^>]*href="https://segkev\\.com${route}"`));
+    assert.doesNotMatch(html, /PandoHealth|cat.bed|\/Users\/kjsegovi|Local draft review|Unpublished draft/i);
+  }
 });
 
-test("keeps the final portfolio self-contained and accessible", async () => {
-  const [page, layout, css, packageJson] = await Promise.all([
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
-    readFile(new URL("../package.json", import.meta.url), "utf8"),
+test('featured projects and project cards follow the launch order', () => {
+  const html = readFileSync(path.join(directory, 'index.html'), 'utf8');
+  const cards = [...html.matchAll(/<h3><a[^>]*>([^<]+)/g)].map((match) => match[1].trim());
+  assert.deepEqual(cards, ['Course Authoring Systems', 'HabFly', 'Tour It', 'AWS Infrastructure']);
+  const projects = readFileSync(path.join(directory, 'projects/index.html'), 'utf8').replaceAll(/<!--[\s\S]*?-->/g, '');
+  const projectNames = [...projects.matchAll(/<article class="project-card[^\"]*">([\s\S]*?)<\/article>/g)]
+    .map(([, card]) => card.match(/<h3><a[^>]*>([^<]+)/)?.[1].trim());
+  assert.deepEqual(projectNames, [
+    'Course Authoring Systems', 'HabFly', 'Tour It', 'Infiniscope Migration',
+    'OLI Torus', 'Embedded Learning', 'Support Ticket Analytics',
   ]);
+  assert.doesNotMatch(html, /class="headline"|class="card-visual|Learning tools, experimental AI/);
+  assert.doesNotMatch(html, /Recent notes/);
+  const notebook = readFileSync(path.join(directory, 'notebook/index.html'), 'utf8');
+  assert.match(notebook, /What belongs here/);
+  assert.doesNotMatch(notebook, /Coming soon|Private draft|Unpublished/);
+});
 
-  assert.doesNotMatch(packageJson, /react-loading-skeleton/);
-  assert.match(page, /imageSrc\?: string/);
-  assert.match(page, /imageAlt\?: string/);
-  assert.match(page, /imagePosition\?: string/);
-  assert.match(page, /<main id="main-content">/);
-  assert.match(page, /aria-label="Primary navigation"/);
-  assert.match(layout, /themeColor: "#14213D"/);
-  assert.match(css, /--black: #000000/);
-  assert.match(css, /--navy: #14213d/i);
-  assert.match(css, /--orange: #fca311/i);
-  assert.match(css, /--gray: #e5e5e5/i);
-  assert.match(css, /--white: #ffffff/i);
-  assert.match(css, /prefers-reduced-motion: reduce/);
+test('hidden notebook has no public discovery links and requests no indexing', () => {
+  if (notebookEnabled) return;
+  for (const route of routes.filter((route) => !route.startsWith('/notebook/'))) {
+    const html = readFileSync(path.join(directory, route, 'index.html'), 'utf8');
+    assert.doesNotMatch(html, /href="\/notebook\/|href="\/feed\.xml"|application\/rss\+xml/, route);
+  }
+  const notebook = readFileSync(path.join(directory, 'notebook/index.html'), 'utf8');
+  assert.match(notebook, /<meta[^>]*name="robots"[^>]*content="noindex, nofollow"/);
+});
 
-  await access(new URL("../public/kevin-segovia-portrait.png", import.meta.url));
-  await access(new URL("../public/github-avatar.png", import.meta.url));
-  await access(new URL("../public/og.png", import.meta.url));
-  await access(new URL("package.json", projectRoot));
+test('all internal links, section links, and local image references resolve', () => {
+  for (const route of routes) {
+    const html = readFileSync(path.join(directory, route, 'index.html'), 'utf8');
+    for (const [, reference] of html.matchAll(/(?:href|src)="([^"<>]+)"/g)) {
+      if (/^(?:https?:|mailto:|data:)/.test(reference)) continue;
+      const url = new URL(reference.replaceAll('&amp;', '&'), 'https://segkev.com' + route);
+      if (url.origin !== 'https://segkev.com') continue;
+      const target = path.join(directory, url.pathname, path.extname(url.pathname) ? '' : 'index.html');
+      assert.ok(existsSync(target), `${route} references missing ${reference}`);
+      if (url.hash && target.endsWith('.html')) {
+        const targetHtml = readFileSync(target, 'utf8');
+        assert.ok(targetHtml.includes(`id="${decodeURIComponent(url.hash.slice(1))}"`), `${route} references missing anchor ${reference}`);
+      }
+    }
+  }
+});
+
+test('unknown paths and draft article URLs return a real 404', async () => {
+  for (const route of ['/not-a-page/', '/projects/not-a-project/', '/notebook/not-a-note/', ...readArticles({ includeDrafts: true }).filter((article) => article.state === 'draft').map((article) => `/notebook/${article.slug}/`)]) {
+    const response = await fetch(base + route);
+    assert.equal(response.status, 404, route);
+    assert.match(await response.text(), /That page isn/);
+  }
+  const redirect = await fetch(base + '/projects', { redirect: 'manual' });
+  assert.equal(redirect.status, 308);
+  assert.equal(redirect.headers.get('location'), '/projects/');
+});
+
+test('the whole deployable directory excludes drafts, source maps, and private notes', () => {
+  const drafts = readArticles({ includeDrafts: true }).filter((article) => article.state === 'draft');
+  function files(root) { return readdirSync(root, { withFileTypes: true }).flatMap((entry) => entry.isDirectory() ? files(path.join(root, entry.name)) : [path.join(root, entry.name)]); }
+  for (const file of files(directory)) {
+    assert.ok(!file.endsWith('.map'), file);
+    assert.doesNotMatch(file, /content-review|content\/notebook|\.local-content/);
+    if (/\.(html|js|json|rsc|xml|txt)$/.test(file)) {
+      const text = readFileSync(file, 'utf8');
+      for (const draft of drafts) {
+        assert.ok(!text.includes(draft.title), `${file} leaks a draft title`);
+        assert.ok(!text.includes(`/notebook/${draft.slug}/`), `${file} leaks a draft route`);
+        assert.ok(!text.includes(draft.body.slice(0, 100)), `${file} leaks draft prose`);
+      }
+      assert.doesNotMatch(text, /\/Users\/kjsegovi\/|\.local-content/);
+    }
+  }
+  assert.ok(!existsSync(path.join(directory, 'server')));
+  assert.ok(existsSync(path.join(directory, '.nojekyll')));
+});
+
+test('sitemap and RSS describe the published collection only', async () => {
+  const sitemapResponse = await fetch(base + '/sitemap.xml');
+  assert.equal(sitemapResponse.status, 200);
+  const sitemap = await sitemapResponse.text();
+  const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1].replace('https://segkev.com', ''));
+  assert.deepEqual(locations.sort(), routes.filter((route) => notebookEnabled || !route.startsWith('/notebook/')).toSorted());
+  const feed = await fetch(base + '/feed.xml');
+  assert.equal(feed.status, 200);
+  assert.match(feed.headers.get('content-type'), /xml/);
+  assert.doesNotMatch(await feed.text(), /<item>/);
+  assert.match(readFileSync(path.join(directory, 'robots.txt'), 'utf8'), /https:\/\/segkev.com\/sitemap.xml/);
 });
