@@ -1,68 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import { headers } from "next/headers";
+import { Navigation } from "@/components/navigation";
+import { site } from "@/lib/site";
+import { notebookEnabled } from "@/lib/features.mjs";
 import "./globals.css";
 
-const title =
-  "Kevin Segovia | Accessible Products, Backend Systems & AI Infrastructure";
-const description =
-  "Application Developer II building accessible learning products, backend services, resilient data systems, and applied AI infrastructure.";
-
-export async function generateMetadata(): Promise<Metadata> {
-  const requestHeaders = await headers();
-  const host =
-    requestHeaders.get("x-forwarded-host") ??
-    requestHeaders.get("host") ??
-    "localhost:3000";
-  const protocol =
-    requestHeaders.get("x-forwarded-proto") ??
-    (host.startsWith("localhost") ? "http" : "https");
-  const baseUrl = `${protocol}://${host}`;
-
-  return {
-    metadataBase: new URL(baseUrl),
-    title,
-    description,
-    authors: [{ name: "Kevin Segovia" }],
-    creator: "Kevin Segovia",
-    alternates: { canonical: "/" },
-    openGraph: {
-      type: "website",
-      locale: "en_US",
-      url: "/",
-      siteName: "Kevin Segovia",
-      title,
-      description,
-      images: [
-        {
-          url: `${baseUrl}/og.png`,
-          width: 1200,
-          height: 630,
-          alt: "Kevin Segovia — Accessible Products, Backend Systems & AI Infrastructure",
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [`${baseUrl}/og.png`],
-    },
-    icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
-  };
-}
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  themeColor: "#14213D",
+export const metadata: Metadata = {
+  metadataBase: new URL(site.origin),
+  title: { default: notebookEnabled ? "Kevin Segovia | Projects & Notebook" : "Kevin Segovia | Projects", template: "%s | Kevin Segovia" },
+  description: site.description,
+  authors: [{ name: site.name }], creator: site.name,
+  icons: { icon: "/favicon.svg" },
+  ...(notebookEnabled ? { alternates: { types: { "application/rss+xml": "/feed.xml" } } } : {}),
 };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#14213d" };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return <html lang="en"><body>
+    <a className="skip-link" href="#main-content">Skip to main content</a>
+    <header className="site-header"><div className="shell nav-shell">
+      <a className="monogram" href="/" aria-label="Kevin Segovia, home">KS<span>.</span></a>
+      <Navigation />
+    </div></header>
+    <main id="main-content" tabIndex={-1}>{children}</main>
+    <footer className="site-footer"><div className="shell footer-shell">
+      <a href="/" className="footer-name">Kevin Segovia<span> / Arizona</span></a>
+      <div><a href={site.github}>GitHub</a><a href={site.linkedin}>LinkedIn</a><a href={`mailto:${site.email}`}>Email</a>{notebookEnabled && <a href="/feed.xml">RSS</a>}</div>
+      <p>© {new Date().getFullYear()} Kevin Segovia</p>
+    </div></footer>
+  </body></html>;
 }
