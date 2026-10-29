@@ -65,3 +65,6 @@ venv/
 .DS_Store
 .idea/
 .vscode/
+
+# Unpublished articles and private editorial notes stay on this machine.
+/.local-content/
