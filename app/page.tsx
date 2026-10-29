@@ -13,7 +13,6 @@ type ProjectMetric = {
 
 type Project = {
   slug: string;
-  number: string;
   name: string;
   category: string;
   status?: string;
@@ -45,7 +44,6 @@ type Credential = {
 const projects: Project[] = [
   {
     slug: "oli-torus",
-    number: "01",
     name: "OLI Torus",
     category: "Accessible product engineering",
     summary:
@@ -64,7 +62,7 @@ const projects: Project[] = [
     highlights: [
       "Built Simple Author flashcard capabilities and resilient authoring behavior.",
       "Improved adaptive iframe accessibility and media ARIA semantics.",
-      "Introduced component resilience improvements across authoring experiences, strengthening responsive behavior, state continuity, and editor reliability.",
+      "Improved responsive layouts, preserved editor state, and fixed authoring reliability issues.",
       "Developed an Advanced Author automation workflow that imports structured Google Slides into adaptive screens, components, rules, media, and validation warnings, combining deterministic parsing with a guarded AI fallback.",
     ],
     links: [
@@ -88,18 +86,17 @@ const projects: Project[] = [
   },
   {
     slug: "support-analytics",
-    number: "02",
     name: "Support Ticket Analytics",
     category: "Data systems & model evaluation",
     summary:
-      "A provenance-preserving analytics pipeline designed for safe, repeatable extraction, classification, evaluation, and publication.",
+      "A Python pipeline for extracting, classifying, and evaluating support tickets while keeping each result traceable to its source.",
     outcome:
-      "Reconciled the source population and resolved message direction while deliberately withholding a classifier that did not meet its acceptance gates.",
+      "Reconciled the ticket IDs and identified message direction. The classifier fell short of the evaluation thresholds and was not put into use.",
     technologies: ["Python", "Typer", "httpx", "Pydantic", "SQLite"],
     highlights: [
       "Read-only extraction with PII-aware handling and isolated local data stores.",
       "Resumable processing, versioned results, explicit provenance, and human-label evaluation.",
-      "Publication gates separate technically complete analysis from decision-grade evidence.",
+      "Kept classifier results out of published analysis when evaluation scores were too low.",
     ],
     metrics: [
       { value: "5,962", label: "Source and local IDs reconciled" },
@@ -111,7 +108,6 @@ const projects: Project[] = [
   },
   {
     slug: "animal-cell",
-    number: "03",
     name: "Into the Animal Cell",
     category: "Interactive learning experience",
     summary:
@@ -134,14 +130,13 @@ const projects: Project[] = [
   },
   {
     slug: "macchat",
-    number: "04",
     name: "MacChatLMBackend",
     category: "Local-first AI infrastructure",
     status: "In development",
     summary:
       "A C++ and Drogon service for routing conversations across local hardware and multiple language-model providers.",
     outcome:
-      "Explores a provider-independent backend with explicit model selection, local-first execution, and durable conversation infrastructure.",
+      "Still in development: model routing and local inference, with conversation storage being built around PostgreSQL.",
     technologies: ["C++", "Drogon", "PostgreSQL", "LLM routing", "Local inference"],
     highlights: [
       "Multi-provider routing with automatic and manual model selection.",
@@ -266,24 +261,7 @@ function ProjectVisual({ project }: { project: Project }) {
     );
   }
 
-  return (
-    <div
-      className={`project-visual project-visual-${project.slug}`}
-      aria-hidden="true"
-    >
-      <div className="visual-grid" />
-      <div className="visual-code">
-        <span>{project.number}</span>
-        <span>{project.category}</span>
-      </div>
-      <strong>{project.name}</strong>
-      <div className="visual-stack">
-        {project.technologies.slice(0, 3).map((technology) => (
-          <span key={technology}>{technology}</span>
-        ))}
-      </div>
-    </div>
-  );
+  return null;
 }
 
 export default function Home() {
@@ -314,45 +292,34 @@ export default function Home() {
 
       <main id="main-content">
         <section className="hero" id="top" aria-labelledby="hero-title">
-          <div className="hero-grid" aria-hidden="true" />
           <div className="shell hero-shell">
             <div className="hero-copy">
               <p className="eyebrow">
                 Application Developer II <span>•</span> Tempe, Arizona
               </p>
               <h1 id="hero-title">Kevin Segovia</h1>
-              <p className="headline">
-                Accessible Products, Backend Systems &amp; AI Infrastructure
+              <p className="biography">
+                I&apos;m an Application Developer II at Arizona State University.
+                I build learning tools and work on the services behind them,
+                with a focus on accessibility and authoring.
               </p>
               <p className="biography">
-                I&apos;m an Application Developer II at Arizona State University
-                building accessible learning systems, backend services, and
-                applied AI infrastructure. I work across TypeScript/React,
-                Python, C++, SQL, AWS, and local-model runtimes to design
-                production authoring features, APIs, resilient data pipelines,
-                model-evaluation workflows, and multi-provider LLM backends. My
-                recent work includes accessibility and authoring contributions
-                to OLI Torus; a provenance-preserving support analytics pipeline
-                with read-only extraction, resumable processing, isolated data
-                stores, and explicit quality gates; an interactive Three.js
-                biology simulation; and a local-first C++ LLM service. I hold an
-                MCS and BS in Computer Science from ASU.
+                My recent work includes contributions to OLI Torus, a browser-based
+                biology simulation, and a support analytics pipeline. I also
+                experiment with local language models and C++ backends.
               </p>
               <div className="hero-actions">
                 <a className="button button-primary" href="#work">
-                  Explore selected work
+                  View my work
                   <ArrowIcon />
                 </a>
                 <a className="button button-ghost" href="mailto:kjsegovi@icloud.com">
-                  Start a conversation
+                  Email me
                 </a>
               </div>
             </div>
 
             <figure className="portrait-frame">
-              <span className="portrait-index" aria-hidden="true">
-                00 / Profile
-              </span>
               <img
                 src="/kevin-segovia-portrait.png"
                 alt="Kevin Segovia smiling in a white shirt."
@@ -360,30 +327,21 @@ export default function Home() {
                 height={1402}
                 fetchPriority="high"
               />
-              <figcaption>
-                <span>Product-minded engineering</span>
-                <span>Accessibility · Systems · AI</span>
-              </figcaption>
             </figure>
           </div>
 
-          <div className="shell capability-strip" aria-label="Core capabilities">
-            <span>01 / Accessible products</span>
-            <span>02 / Backend services</span>
-            <span>03 / Data reliability</span>
-            <span>04 / Applied AI</span>
-          </div>
+
         </section>
 
         <section className="work-section section" id="work" aria-labelledby="work-title">
           <div className="shell section-heading">
-            <p className="section-kicker">Selected work / 2024—2026</p>
+            <p className="section-kicker">Selected work</p>
             <div>
-              <h2 id="work-title">Systems built with purpose.</h2>
+              <h2 id="work-title">Projects &amp; contributions</h2>
               <p>
-                Production engineering, private analytical systems, and
-                open-source experiments—documented through the decisions that
-                make them dependable.
+                A selection of my work on learning platforms, data processing,
+                and local AI tools. Each entry describes what I worked on and
+                where the project stands.
               </p>
             </div>
           </div>
@@ -392,7 +350,6 @@ export default function Home() {
             {projects.map((project) => (
               <article className="project" key={project.slug}>
                 <div className="project-rail">
-                  <span>{project.number}</span>
                   <p>{project.category}</p>
                 </div>
                 <div className="project-body">
@@ -449,7 +406,7 @@ export default function Home() {
                       </div>
                     ) : (
                       <p className="private-note">
-                        Private codebase · Engineering-safe summary
+                        Private codebase
                       </p>
                     )}
                   </div>
@@ -472,16 +429,13 @@ export default function Home() {
               <h2 id="experience-title">Experience</h2>
             </div>
             <p>
-              A path from product quality into application engineering—grounded
-              in accessibility, reliability, and thoughtful technical systems.
+              I moved from quality assurance into application development at
+              ASU, working on educational software in both roles.
             </p>
           </div>
           <div className="shell timeline">
-            {experience.map((item, index) => (
+            {experience.map((item) => (
               <article className="timeline-item" key={`${item.role}-${item.period}`}>
-                <span className="timeline-number" aria-hidden="true">
-                  0{index + 1}
-                </span>
                 <div>
                   <p className="timeline-period">{item.period}</p>
                   <h3>{item.role}</h3>
@@ -503,9 +457,8 @@ export default function Home() {
             <div>
               <h2 id="credentials-title">Credentials</h2>
               <p>
-                Computer science foundations reinforced by focused study in
-                machine learning, deep learning, computer vision, data science,
-                and full-stack development.
+                Computer science degrees from ASU and coursework in
+                machine learning, data science, and web development.
               </p>
             </div>
           </div>
@@ -537,12 +490,11 @@ export default function Home() {
         </section>
 
         <section className="contact-section" id="contact" aria-labelledby="contact-title">
-          <div className="contact-grid" aria-hidden="true" />
           <div className="shell contact-shell">
             <div>
-              <p className="section-kicker section-kicker-dark">Contact / Arizona</p>
+              <p className="section-kicker section-kicker-dark">Get in touch</p>
               <h2 id="contact-title">
-                Let&apos;s build something useful, accessible, and resilient.
+                Contact
               </h2>
             </div>
             <div className="contact-actions">
@@ -587,7 +539,6 @@ export default function Home() {
       <footer>
         <div className="shell footer-shell">
           <p>© {new Date().getFullYear()} Kevin Segovia</p>
-          <p>Designed for clarity. Built for the web.</p>
           <a href="#top">Back to top ↑</a>
         </div>
       </footer>

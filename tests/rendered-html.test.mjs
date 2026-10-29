@@ -52,7 +52,7 @@ test("server-renders Kevin Segovia's portfolio", async () => {
     /Kevin Segovia is an Application Developer II|He works across|His recent work|He holds an MCS/i,
   );
   assert.match(html, /OLI Torus/i);
-  assert.match(html, /Introduced component resilience improvements/i);
+  assert.match(html, /Improved responsive layouts, preserved editor state/i);
   assert.match(html, /Advanced Author automation workflow/i);
   assert.match(html, /adaptive screens, components, rules, media/i);
   assert.match(html, /oli-torus-simple-author-ai\/commit\/8d174158/i);
